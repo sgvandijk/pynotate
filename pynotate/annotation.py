@@ -5,7 +5,15 @@ from skimage.filters import sobel
 from skimage.morphology import watershed
 
 
-class Selection(object):
+class Annotation(object, metaclass=abc.ABCMeta):
+    @abc.abstractmethod
+    def as_layer(self):
+        pass
+
+    @abc.abstractmethod
+    def to_json(self):
+        pass
+
 
     def __init__(self, image_id, image):
         self._image_id = image_id
@@ -26,6 +34,20 @@ class Selection(object):
     def classes(self):
         return self._classes
 
+class PixelAnnotation(Annotation):
+    def __init__(self, annotation_mask=None):
+        self._annotation_mask = annotation_mask
+
+    @property
+    def annotation_mask(self):
+        return self._annotation_mask
+
+    def to_json(self):
+        return {}
+
+    def as_layer(self):
+        return self._annotation_mask
+
 
 class PixelAnnotationOperator(metaclass=abc.ABCMeta):
     @abc.abstractmethod
@@ -40,8 +62,10 @@ class PixelAnnotationOperator(metaclass=abc.ABCMeta):
         pass
 
 
-    def run(self, image, selection_mask):
 class FloodFillExpander(PixelAnnotationOperator):
+    def run(self, image, pixel_annotation):
         grayscale_image = rgb2gray(image)
         elevation_map = sobel(grayscale_image)
-        return watershed(elevation_map, selection_mask, connectivity=[[1, 1, 1], [1, 0, 1], [1, 1, 1]])
+        new_annotation_mask = watershed(elevation_map, pixel_annotation.as_layer(),
+                                        connectivity=[[1, 1, 1], [1, 0, 1], [1, 1, 1]])
+        return PixelAnnotation(new_annotation_mask)

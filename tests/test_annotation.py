@@ -1,9 +1,9 @@
 import unittest
-import numpy as np
-from skimage.io._io import imshow, imsave
 
+import numpy as np
+
+from pynotate.annotation import FloodFillExpander, PixelAnnotation
 from pynotate.io import read_image
-from pynotate.annotation import FloodFillExpander
 
 
 class TestAnnotation(unittest.TestCase):
@@ -16,14 +16,16 @@ class TestAnnotation(unittest.TestCase):
         # Select one pixel in brightest red area
         initial_annotation_mask[20, 20] = 1
 
+        initial_annotation = PixelAnnotation(initial_annotation_mask)
+
         expander = FloodFillExpander()
 
-        new_annotation_mask = expander.run(image, initial_annotation_mask)
-        self.assertEqual(new_annotation_mask.shape, initial_annotation_mask.shape)
+        new_annotation = expander.run(image, initial_annotation)
+        self.assertEqual(new_annotation.annotation_mask.shape, initial_annotation.annotation_mask.shape)
 
         expected_annotation_mask = np.zeros(image.shape[:2])
         expected_annotation_mask[:, :] = 1
-        np.testing.assert_array_equal(expected_annotation_mask, new_annotation_mask)
+        np.testing.assert_array_equal(expected_annotation_mask, new_annotation.annotation_mask)
 
     def test_floodfill_expander_white_background(self):
         # With a selection in the white background, selection should cover coloured squares
@@ -37,12 +39,14 @@ class TestAnnotation(unittest.TestCase):
         # Select one pixel white with another label
         initial_annotation_mask[120, 40] = 2
 
-        expander = FloodFillExpander()
-        new_annotation_mask = expander.run(image, initial_annotation_mask)
+        initial_annotation = PixelAnnotation(initial_annotation_mask)
 
-        self.assertEqual(new_annotation_mask.shape, initial_annotation_mask.shape)
+        expander = FloodFillExpander()
+        new_annotation = expander.run(image, initial_annotation)
+
+        self.assertEqual(new_annotation.annotation_mask.shape, initial_annotation_mask.shape)
 
         expected_annotation_mask = np.zeros(image.shape[:2])
         expected_annotation_mask[:, :] = 2
         expected_annotation_mask[20:60, 20:180] = 1
-        np.testing.assert_array_equal(expected_annotation_mask, new_annotation_mask)
+        np.testing.assert_array_equal(expected_annotation_mask, new_annotation.annotation_mask)
