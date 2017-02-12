@@ -1,3 +1,4 @@
+import json
 import unittest
 
 import numpy as np
@@ -7,6 +8,18 @@ from pynotate.io import read_image
 
 
 class TestAnnotation(unittest.TestCase):
+    def test_pixel_annotation_json(self):
+        annotation_mask = np.array([[1, 2], [3, 4]])
+        annotation = PixelAnnotation(annotation_mask)
+
+        json_str = annotation.to_json()
+
+        self.assertDictEqual({'mask': [[1, 2], [3, 4]]}, json.loads(json_str))
+
+        new_annotation = PixelAnnotation.from_json(json_str)
+
+        np.testing.assert_array_equal(annotation.annotation_mask, new_annotation.annotation_mask)
+
     def test_floodfill_expander_single_label(self):
         # When only a single label is given, the full image should be selected
 

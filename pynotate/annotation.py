@@ -1,5 +1,7 @@
 import abc
+import json
 
+import numpy as np
 from skimage.color.colorconv import rgb2gray
 from skimage.filters import sobel
 from skimage.morphology import watershed
@@ -14,13 +16,17 @@ class Annotation(object, metaclass=abc.ABCMeta):
     def to_json(self):
         pass
 
+    @abc.abstractclassmethod
+    def from_json(cls, json):
+        pass
 
+
+class AnnotationSet(object):
     def __init__(self, image_id, image):
         self._image_id = image_id
         self._image = image
         self._classes = {}
-
-        pass
+        self._annotations = []
 
     @property
     def image_id(self):
@@ -42,11 +48,15 @@ class PixelAnnotation(Annotation):
     def annotation_mask(self):
         return self._annotation_mask
 
-    def to_json(self):
-        return {}
-
     def as_layer(self):
         return self._annotation_mask
+
+    def to_json(self):
+        return json.dumps({'mask': self.annotation_mask.tolist()})
+
+    @classmethod
+    def from_json(cls, json_str):
+        return PixelAnnotation(np.array(json.loads(json_str)['mask']))
 
 
 class PixelAnnotationOperator(metaclass=abc.ABCMeta):
