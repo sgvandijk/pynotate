@@ -40,6 +40,10 @@ class AnnotationSet(object):
     def classes(self):
         return self._classes
 
+    def add_annotation(self, annotation):
+        self._annotations.append(annotation)
+
+
 class PixelAnnotation(Annotation):
     def __init__(self, annotation_mask=None):
         self._annotation_mask = annotation_mask
