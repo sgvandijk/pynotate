@@ -1,7 +1,7 @@
 import tkinter as tk
 
 from pynotate.io import read_image
-from pynotate.views import TKAnnotatedImageView
+from pynotate.view.annotatedimageview import TKAnnotatedImageView
 
 
 class Application(tk.Frame):
