@@ -6,6 +6,25 @@ from skimage.color.colorconv import rgb2gray
 from skimage.filters import sobel
 from skimage.morphology import watershed
 
+class AnnotationClass(object):
+
+    def __init__(self, label, name, color):
+        self._label = label
+        self._name = name
+        self._color = color
+
+    @property
+    def label(self):
+        return self._label
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def color(self):
+        return self._color
+
 
 class Annotation(object, metaclass=abc.ABCMeta):
     @abc.abstractmethod
@@ -25,7 +44,6 @@ class AnnotationSet(object):
     def __init__(self, image_id, image):
         self._image_id = image_id
         self._image = image
-        self._classes = {}
         self._annotations = []
 
     @property
@@ -35,10 +53,6 @@ class AnnotationSet(object):
     @property
     def image(self):
         return self._image
-
-    @property
-    def classes(self):
-        return self._classes
 
     def add_annotation(self, annotation):
         self._annotations.append(annotation)
