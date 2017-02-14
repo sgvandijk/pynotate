@@ -1,7 +1,9 @@
 import tkinter as tk
 
+from pynotate.annotation import AnnotationClass
 from pynotate.io import read_image
 from pynotate.view.annotatedimageview import TKAnnotatedImageView
+from pynotate.view.annotationclassview import TKAnnotationClassView
 
 
 class Application(tk.Frame):
@@ -13,13 +15,12 @@ class Application(tk.Frame):
     def create_widgets(self):
         self.image_view = TKAnnotatedImageView()
         self.image_view.panel.grid()
-
         img = read_image('tests/resources/colors.png')
         self.image_view.image = img
 
-        self.quitButton = tk.Button(self, text='Quit',
-                                    command=self.quit)
-        self.quitButton.grid()
+        self.class_view = TKAnnotationClassView()
+        self.class_view.tree_view.grid()
+        self.class_view.classes = [AnnotationClass(1, 'background', 'black'), AnnotationClass(2, 'foreground', 'blue')]
 
 
 if __name__ == '__main__':
