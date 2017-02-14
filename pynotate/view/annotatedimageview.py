@@ -18,6 +18,7 @@ class AnnotatedImageView(metaclass=abc.ABCMeta):
 class TKAnnotatedImageView(AnnotatedImageView):
     def __init__(self):
         self._image = None
+        self._photo_image = None
         self._annotation = None
         self._panel = tk.Label()
 
