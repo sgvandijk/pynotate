@@ -23,6 +23,13 @@ class Application(tk.Frame):
 
 
 if __name__ == '__main__':
+    def check():
+        app.after(50, check)
+
     app = Application()
     app.master.title('Pynotate')
-    app.mainloop()
+    app.after(50, check)
+    try:
+        app.mainloop()
+    except KeyboardInterrupt:
+        pass
